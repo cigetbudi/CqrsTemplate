@@ -7,7 +7,7 @@ using CqrsTemplate.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CqrsTemplate.Application.Products.Commands.CreateProduct
+namespace CqrsTemplate.Application.Internal.Products.Commands
 {
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ApiResponse<CreateProductResponseDto>>
     {

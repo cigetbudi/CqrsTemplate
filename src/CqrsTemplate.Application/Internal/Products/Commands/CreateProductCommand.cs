@@ -2,7 +2,7 @@ using CqrsTemplate.Application.Common.Wrappers;
 using CqrsTemplate.Application.Internal.Products.DTOs;
 using MediatR;
 
-namespace CqrsTemplate.Application.Products.Commands.CreateProduct;
+namespace CqrsTemplate.Application.Internal.Products.Commands;
 
 public class CreateProductCommand(CreateProductRequestDto createProductData) : IRequest<ApiResponse<CreateProductResponseDto>>
 {

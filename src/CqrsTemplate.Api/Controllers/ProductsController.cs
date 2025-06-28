@@ -1,5 +1,5 @@
+using CqrsTemplate.Application.Internal.Products.Commands;
 using CqrsTemplate.Application.Internal.Products.DTOs;
-using CqrsTemplate.Application.Products.Commands.CreateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
