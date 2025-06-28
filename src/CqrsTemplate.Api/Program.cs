@@ -1,4 +1,4 @@
-// using CqrsTemplate.Api.Controllers;
+using CqrsTemplate.Api.Controllers;
 using CqrsTemplate.Application;
 using CqrsTemplate.Infrastructure;
 
