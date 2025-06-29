@@ -6,6 +6,7 @@ using CqrsTemplate.Infrastructure.Persistence;
 using CqrsTemplate.Infrastructure.Persistence.Repositories;
 using CqrsTemplate.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace CqrsTemplate.Infrastructure;
 
@@ -25,16 +26,22 @@ public static class DependencyInjection
         // Service Product (urusan ke External Api)
         services.AddScoped<IExternalProductService, ExternalProductService>();
 
-
         // Library
         // Tracer
         services.AddScoped<ITracer, Tracer>();
         services.AddTransient<HttpClientTracingHandler>();
-        services.AddTransient<ExternalApiLoggingHandler>();
 
-        services.AddHttpClient("ExternalApi")
-            .AddHttpMessageHandler<ExternalApiLoggingHandler>()
-            .AddHttpMessageHandler<HttpClientTracingHandler>();
+        // DAFTARKAN NAMED HTTP CLIENTS DENGAN CUSTOM HANDLER
+        services.AddHttpClient("ProductApi")
+            .AddHttpMessageHandler(sp =>
+            {
+                // Membuat instance ExternalApiLoggingHandler dengan ClientName "DefaultExternalApi"
+                var logger = sp.GetRequiredService<ILogger<ExternalApiLoggingHandler>>();
+                var library = sp.GetRequiredService<ILibrary>();
+                var exloggingRepo = sp.GetRequiredService<IExternalApiLoggingRepository>();
+                return new ExternalApiLoggingHandler(logger, library, exloggingRepo, "ProductApiService");
+            })
+            .AddHttpMessageHandler<HttpClientTracingHandler>(); 
 
         services.AddScoped<ILibrary, Library>();
 

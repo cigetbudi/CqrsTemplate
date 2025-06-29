@@ -10,16 +10,18 @@ public class ExternalApiLoggingHandler : DelegatingHandler
     private readonly ILogger<ExternalApiLoggingHandler> _logger;
     private readonly ILibrary _library;
     private readonly IExternalApiLoggingRepository _exloggingRepository;
-    
+    private readonly string _clientName; // Namanya kudu sama pas mau dipake logging di DI
 
     public ExternalApiLoggingHandler(
         ILogger<ExternalApiLoggingHandler> logger,
         ILibrary library,
-        IExternalApiLoggingRepository exloggingRepository)
+        IExternalApiLoggingRepository exloggingRepository,
+        string clientName)
     {
         _logger = logger;
         _library = library;
         _exloggingRepository = exloggingRepository;
+        _clientName = clientName; 
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -55,7 +57,7 @@ public class ExternalApiLoggingHandler : DelegatingHandler
         {
             TraceID = traceId,
             ServiceName = request.RequestUri?.AbsolutePath ?? "-",
-            ClientName = "ExternalApi",
+            ClientName = _clientName, 
             RequestPayload = curl.ToString(),
             ResponsePayload = responseBody,
             RequestDate = start,

@@ -16,7 +16,7 @@ public class ExternalProductService : IExternalProductService
 
     public ExternalProductService(IHttpClientFactory httpClientFactory, IConfiguration configuration,  ILogger<ExternalProductService> logger)
     {
-        _httpClient = httpClientFactory.CreateClient("ExternalApi");
+        _httpClient = httpClientFactory.CreateClient("ProductApi");
         _externalApiUrl = configuration["ExternalApiService:Url"]
             ?? throw new InvalidOperationException("External API URL not configured.");
         // _tracer = tracer;
