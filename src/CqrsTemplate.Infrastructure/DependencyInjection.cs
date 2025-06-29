@@ -1,4 +1,5 @@
 using CqrsTemplate.Application.Common.Interfaces;
+using CqrsTemplate.Infrastructure.Common.Tracing;
 using CqrsTemplate.Infrastructure.Persistence;
 using CqrsTemplate.Infrastructure.Persistence.Repositories;
 using CqrsTemplate.Infrastructure.Services;
@@ -18,6 +19,14 @@ public static class DependencyInjection
 
         // Service Product (urusan ke External Api)
         services.AddScoped<IExternalProductService, ExternalProductService>();
+
+        // Tracer
+        services.AddScoped<ITracer, Tracer>();
+        services.AddTransient<HttpClientTracingHandler>();
+
+        services.AddHttpClient("ExternalApi")
+            .AddHttpMessageHandler<HttpClientTracingHandler>();
+
 
         return services;
     }
