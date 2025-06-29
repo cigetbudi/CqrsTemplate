@@ -1,4 +1,5 @@
 using System.Text;
+using CqrsTemplate.Api.Middleware;
 using CqrsTemplate.Application;
 using CqrsTemplate.Infrastructure;
 using CqrsTemplate.Infrastructure.Common.Tracing;
@@ -17,6 +18,7 @@ try
     Log.Information("Starting up...");
 
     var builder = WebApplication.CreateBuilder(args);
+    
 
     builder.Host.UseSerilog(); // Pasang setelah builder
 
@@ -130,6 +132,7 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseMiddleware<ApiLoggingMiddleware>();
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
