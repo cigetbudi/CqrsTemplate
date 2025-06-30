@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CqrsTemplate.Api.Controllers;
 
+
+[ApiController]
 [Route("api/[controller]")]
-public class ProductsController : Controller
+public class ProductsController : ControllerBase
 {
     private readonly ISender _mediator;
 

@@ -6,6 +6,11 @@ using CqrsTemplate.Infrastructure.Common.Tracing;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using App = CqrsTemplate.Application;
+using Microsoft.AspNetCore.Mvc;
+
 
 
 Log.Logger = new LoggerConfiguration()
@@ -38,7 +43,7 @@ try
     builder.Services.AddOpenTelemetry()
     .WithTracing(t =>
     {
-        var serviceName = tracingOptions.ServiceName ?? "MyService";
+        var serviceName = tracingOptions?.ServiceName ?? "MyService";
 
         t.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
         .AddAspNetCoreInstrumentation()
@@ -98,29 +103,41 @@ try
         })
         .AddSource(serviceName);
 
-        var exporter = tracingOptions.Exporter?.ToLowerInvariant();
+        var exporter = tracingOptions?.Exporter?.ToLowerInvariant();
 
         if (exporter == "jaeger")
         {
             t.AddJaegerExporter(options =>
             {
-                options.AgentHost = tracingOptions.Jaeger.Host ?? "localhost";
-                options.AgentPort = tracingOptions.Jaeger.Port;
+                options.AgentHost = tracingOptions?.Jaeger.Host ?? "localhost";
+                options.AgentPort = tracingOptions?.Jaeger.Port ?? 8888;
             });
         }
         else if (exporter == "otlp")
         {
             t.AddOtlpExporter(options =>
             {
-                var endpoint = tracingOptions.Otlp.Endpoint ?? "http://localhost:4317";
+                var endpoint = tracingOptions?.Otlp.Endpoint ?? "http://localhost:4317";
                 options.Endpoint = new Uri(endpoint);
             });
         }
     });
 
+    //FluentValidation
+    builder.Services.AddValidatorsFromAssembly(typeof(App.DependencyInjection).Assembly);
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddFluentValidationClientsideAdapters();
 
     // API
     builder.Services.AddControllers();
+
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+
+    
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
@@ -132,7 +149,9 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseRouting();
     app.UseMiddleware<ApiLoggingMiddleware>();
+    app.UseMiddleware<ValidationExceptionMiddleware>();
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();

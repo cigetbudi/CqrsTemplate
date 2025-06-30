@@ -56,8 +56,9 @@ public class ExternalApiLoggingHandler : DelegatingHandler
         var log = new ExternalApiLog
         {
             TraceID = traceId,
-            ServiceName = request.RequestUri?.AbsolutePath ?? "-",
-            ClientName = _clientName, 
+            BackendSystem = request.RequestUri?.AbsoluteUri ?? "-",
+            ServiceName = _clientName,
+            HttpStatus = (int)response.StatusCode,
             RequestPayload = curl.ToString(),
             ResponsePayload = responseBody,
             RequestDate = start,
